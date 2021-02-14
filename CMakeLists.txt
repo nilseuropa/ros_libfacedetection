@@ -25,6 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
+  Euler.msg
   Rectangle.msg
   Vector2D.msg
   FaceObject.msg

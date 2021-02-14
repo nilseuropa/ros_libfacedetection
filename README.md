@@ -25,7 +25,7 @@ Trained model can be found in the official library repository: https://github.co
 
 ### ROS wrapper
 
-The `face_detector_node` subscribes to `camera/image` and `camera/camera_info` topics and publishes `FaceObject` messages.
+The `face_detector_node` subscribes to `camera/image` and `camera/camera_info` topics and publishes `FaceObject` messages. Use parameter `estimate_pose` to enable PNP solver and `Euler` message publisher.
 
 #### FaceObject message type
 
