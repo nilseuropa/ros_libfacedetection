@@ -111,8 +111,8 @@ int main(int argc, char** argv)
 
   face_pub = nh.advertise<ros_libfacedetection::FaceObject>(node_name+"/faces", 10);
 
-  message_filters::Subscriber<Image> image_sub(nh, "/head_camera/image_raw", 1);
-  message_filters::Subscriber<CameraInfo> info_sub(nh, "/head_camera/camera_info", 1);
+  message_filters::Subscriber<Image> image_sub(nh, "/camera/image_raw", 1);
+  message_filters::Subscriber<CameraInfo> info_sub(nh, "/camera/camera_info", 1);
   TimeSynchronizer<Image, CameraInfo> sync(image_sub, info_sub, 10);
   sync.registerCallback(boost::bind(&callback, _1, _2));
 

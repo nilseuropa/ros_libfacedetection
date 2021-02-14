@@ -1,0 +1,14 @@
+<launch>
+
+  <arg name="display_output" default="true"/>
+  <arg name="camera_topic"   default="/camera/image_rect"/>
+
+  <node name="face_detector_node" pkg="ros_libfacedetection" type="facedetector_node" output="screen">
+    <param name="display_output" value="$(arg display_output)"/>
+    <remap from="/camera/image_raw" to="$(arg camera_topic)"/>
+    <param name="probability_threshold" value="0.75"/>
+    <param name="detector_width"  value="160"/>
+    <param name="detector_height" value="120"/>
+  </node>
+
+</launch>
