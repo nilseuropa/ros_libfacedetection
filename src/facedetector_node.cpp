@@ -75,6 +75,10 @@ void callback(const ImageConstPtr& msg, const CameraInfoConstPtr& cam_info)
             faceMsg.boundingbox.position.y = y;
             faceMsg.boundingbox.size.x = w;
             faceMsg.boundingbox.size.y = h;
+            for (uint8_t i=0; i<5; i++){
+              faceMsg.landmark[i].x = cam_info->width*(p[5+i*2])/detector_width;
+              faceMsg.landmark[i].y = cam_info->height*(p[5 + i*2 + 1])/detector_height;
+            }
             face_pub.publish(faceMsg);
 
             if (display_output){
@@ -84,7 +88,12 @@ void callback(const ImageConstPtr& msg, const CameraInfoConstPtr& cam_info)
               if(y + h >= cam_info->height) h = cam_info->height - y;
 
               cv::putText(result_image, sScore, cv::Point(x, y-8), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 1);
-              rectangle(result_image, cv::Rect(x, y, w, h), cv::Scalar(0, 0, 255), 1);
+              cv::rectangle(result_image, cv::Rect(x, y, w, h), cv::Scalar(0, 0, 255), 1);
+
+              for (uint8_t i=0; i<5; i++){
+                cv::circle(result_image, cv::Point(faceMsg.landmark[i].x,faceMsg.landmark[i].y), 1, cv::Scalar(0, 0, 255), 4);
+              }
+
               cv::imshow(node_name, result_image);
               cv::waitKey(1);
             }
