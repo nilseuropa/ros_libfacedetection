@@ -1,8 +1,8 @@
 ## ROS Wrapper for libfacedetection
 
-
-
 This is a ROS package utilizing `libfacedetection` - that is an open source library for CNN-based face detection. The CNN model has been converted to static variables in C source files. The source code does not depend on any other libraries. SIMD instructions are used to speed up the detection. You can enable AVX2 if you use Intel CPU or NEON for ARM.
+
+![](doc/detector.png)
 
 ### libfacedetection
 
@@ -26,4 +26,17 @@ Trained model can be found in the official library repository: https://github.co
 ### ROS wrapper
 
 The `face_detector_node` subscribes to `camera/image` and `camera/camera_info` topics and publishes `FaceObject` messages.
+
+#### FaceObject message type
+
+A FaceObject message contains the bounding box coordinates, facial landmarks ( if any ) of a singular detected face. _( Other type of FaceObject publishers can be found in https://github.com/nilseuropa/ros_ncnn )_.
+
+```xml
+Header header
+Rectangle boundingbox
+Vector2D[] landmark
+float32 probability
+```
+
+**Author:** [Marton Juhasz](https://github.com/nilseuropa)
 
