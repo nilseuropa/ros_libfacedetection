@@ -13,11 +13,11 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/CameraInfo.h>
 
-#include "ros_ncnn/FaceObject.h"
+#include "ros_libfacedetection/FaceObject.h"
 #include "facedetection/facedetectcnn.h"
 
 cv_bridge::CvImagePtr cv_ptr;
-ros_ncnn::FaceObject faceMsg;
+ros_libfacedetection::FaceObject faceMsg;
 ros::Publisher face_pub;
 
 std::string node_name = "";
@@ -65,17 +65,29 @@ void callback(const ImageConstPtr& msg, const CameraInfoConstPtr& cam_info)
         char sScore[256];
         snprintf(sScore, 256, "%d", confidence);
 
-        if(confidence > prob_threshold && display_output){
+        if(confidence > prob_threshold){
 
-            cv::Mat result_image = cv_ptr->image.clone();
+            faceMsg.header.seq++;
+            faceMsg.header.frame_id = cam_info->header.frame_id;
+            faceMsg.header.stamp = ros::Time::now();
+            faceMsg.probability = confidence;
+            faceMsg.boundingbox.position.x = x;
+            faceMsg.boundingbox.position.y = y;
+            faceMsg.boundingbox.size.x = w;
+            faceMsg.boundingbox.size.y = h;
+            face_pub.publish(faceMsg);
 
-            if(x + w >= cam_info->width) w = cam_info->width - x;
-            if(y + h >= cam_info->height) h = cam_info->height - y;
+            if (display_output){
+              cv::Mat result_image = cv_ptr->image.clone();
 
-            cv::putText(result_image, sScore, cv::Point(x, y-8), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 1);
-            rectangle(result_image, cv::Rect(x, y, w, h), cv::Scalar(0, 0, 255), 1);
-            cv::imshow(node_name, result_image);
-            cv::waitKey(1);
+              if(x + w >= cam_info->width) w = cam_info->width - x;
+              if(y + h >= cam_info->height) h = cam_info->height - y;
+
+              cv::putText(result_image, sScore, cv::Point(x, y-8), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 1);
+              rectangle(result_image, cv::Rect(x, y, w, h), cv::Scalar(0, 0, 255), 1);
+              cv::imshow(node_name, result_image);
+              cv::waitKey(1);
+            }
         }
     }
   }
@@ -97,7 +109,7 @@ int main(int argc, char** argv)
   nhLocal.param("detector_height", detector_height, 120);
   nhLocal.param("display_output", display_output, true);
 
-  face_pub = nh.advertise<ros_ncnn::FaceObject>(node_name+"/faces", 10);
+  face_pub = nh.advertise<ros_libfacedetection::FaceObject>(node_name+"/faces", 10);
 
   message_filters::Subscriber<Image> image_sub(nh, "/head_camera/image_raw", 1);
   message_filters::Subscriber<CameraInfo> info_sub(nh, "/head_camera/camera_info", 1);
